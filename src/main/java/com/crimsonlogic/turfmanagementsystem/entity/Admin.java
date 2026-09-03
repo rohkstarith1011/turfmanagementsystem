@@ -2,6 +2,7 @@ package com.crimsonlogic.turfmanagementsystem.entity;
 
 
 import com.crimsonlogic.turfmanagementsystem.entity.enums.UserStatus;
+import com.crimsonlogic.turfmanagementsystem.util.EntityIdGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,9 +20,8 @@ import jakarta.persistence.Table;
 public class Admin extends AbstractUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "admin_id")
-    private Long adminId;
+    private String adminId;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -30,7 +31,7 @@ public class Admin extends AbstractUser {
         super();
     }
 
-    public Admin(Long adminId,
+    public Admin(String adminId,
                  String name,
                  String email,
                  String phone,
@@ -42,12 +43,17 @@ public class Admin extends AbstractUser {
         this.adminId = adminId;
         this.user = user;
     }
-
-    public Long getAdminId() {
+    @PrePersist
+    private void generateAdminId() {
+        if (adminId == null || adminId.isBlank()) {
+            adminId = EntityIdGenerator.generate("ADM");
+        }
+    }
+    public String getAdminId() {
         return adminId;
     }
 
-    public void setAdminId(Long adminId) {
+    public void setAdminId(String adminId) {
         this.adminId = adminId;
     }
 

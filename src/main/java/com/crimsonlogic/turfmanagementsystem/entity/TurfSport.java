@@ -2,6 +2,8 @@ package com.crimsonlogic.turfmanagementsystem.entity;
 
 
 
+import com.crimsonlogic.turfmanagementsystem.util.EntityIdGenerator;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -26,9 +29,8 @@ import jakarta.persistence.UniqueConstraint;
 public class TurfSport {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "turf_sport_id")
-    private Long turfSportId;
+    private String turfSportId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "facility_id", nullable = false)
@@ -44,7 +46,7 @@ public class TurfSport {
     public TurfSport() {
     }
 
-    public TurfSport(Long turfSportId,
+    public TurfSport(String turfSportId,
                      Facility facility,
                      Sport sport,
                      String status) {
@@ -55,11 +57,11 @@ public class TurfSport {
         this.status = status;
     }
 
-    public Long getTurfSportId() {
+    public String getTurfSportId() {
         return turfSportId;
     }
 
-    public void setTurfSportId(Long turfSportId) {
+    public void setTurfSportId(String turfSportId) {
         this.turfSportId = turfSportId;
     }
 
@@ -85,5 +87,11 @@ public class TurfSport {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    @PrePersist
+    private void generateTurfSportId() {
+        if (turfSportId == null || turfSportId.isBlank()) {
+            turfSportId = EntityIdGenerator.generate("TFSPR");
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.crimsonlogic.turfmanagementsystem.entity;
 
 
 import com.crimsonlogic.turfmanagementsystem.entity.enums.UserStatus;
+import com.crimsonlogic.turfmanagementsystem.util.EntityIdGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,9 +21,8 @@ import jakarta.persistence.Table;
 public class Player extends AbstractUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "player_id")
-    private Long playerId;
+    private String playerId;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -40,7 +41,7 @@ public class Player extends AbstractUser {
         super();
     }
 
-    public Player(Long playerId,
+    public Player(String playerId,
                   String name,
                   String email,
                   String phone,
@@ -59,11 +60,11 @@ public class Player extends AbstractUser {
         this.preferredSports = preferredSports;
     }
 
-    public Long getPlayerId() {
+    public String getPlayerId() {
         return playerId;
     }
 
-    public void setPlayerId(Long playerId) {
+    public void setPlayerId(String playerId) {
         this.playerId = playerId;
     }
 
@@ -97,5 +98,11 @@ public class Player extends AbstractUser {
 
     public void setPreferredSports(String preferredSports) {
         this.preferredSports = preferredSports;
+    }
+    @PrePersist
+    private void generatePlayerId() {
+        if (playerId == null || playerId.isBlank()) {
+            playerId = EntityIdGenerator.generate("PLY");
+        }
     }
 }

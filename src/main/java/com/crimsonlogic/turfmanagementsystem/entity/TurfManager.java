@@ -3,6 +3,7 @@ package com.crimsonlogic.turfmanagementsystem.entity;
 
 
 import com.crimsonlogic.turfmanagementsystem.entity.enums.UserStatus;
+import com.crimsonlogic.turfmanagementsystem.util.EntityIdGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,9 +21,8 @@ import jakarta.persistence.Table;
 public class TurfManager extends AbstractUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "turf_manager_id")
-    private Long turfManagerId;
+    private String turfManagerId;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -31,7 +32,7 @@ public class TurfManager extends AbstractUser {
         super();
     }
 
-    public TurfManager(Long turfManagerId,
+    public TurfManager(String turfManagerId,
                        String name,
                        String email,
                        String phone,
@@ -44,11 +45,11 @@ public class TurfManager extends AbstractUser {
         this.user = user;
     }
 
-    public Long getTurfManagerId() {
+    public String getTurfManagerId() {
         return turfManagerId;
     }
 
-    public void setTurfManagerId(Long turfManagerId) {
+    public void setTurfManagerId(String turfManagerId) {
         this.turfManagerId = turfManagerId;
     }
 
@@ -58,5 +59,11 @@ public class TurfManager extends AbstractUser {
 
     public void setUser(User user) {
         this.user = user;
+    }
+    @PrePersist
+    private void generateTurfManagerId() {
+        if (turfManagerId == null || turfManagerId.isBlank()) {
+            turfManagerId = EntityIdGenerator.generate("TFM");
+        }
     }
 }

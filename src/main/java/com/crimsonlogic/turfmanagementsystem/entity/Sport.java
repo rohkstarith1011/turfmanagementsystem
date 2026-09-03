@@ -2,11 +2,14 @@ package com.crimsonlogic.turfmanagementsystem.entity;
 
 
 
+import com.crimsonlogic.turfmanagementsystem.util.EntityIdGenerator;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,9 +17,8 @@ import jakarta.persistence.Table;
 public class Sport {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sport_id")
-    private Long sportId;
+    private String sportId;
 
     @Column(nullable = false, unique = true)
     private String name;
@@ -30,7 +32,7 @@ public class Sport {
     public Sport() {
     }
 
-    public Sport(Long sportId,
+    public Sport(String sportId,
                  String name,
                  String description,
                  String status) {
@@ -41,11 +43,11 @@ public class Sport {
         this.status = status;
     }
 
-    public Long getSportId() {
+    public String getSportId() {
         return sportId;
     }
 
-    public void setSportId(Long sportId) {
+    public void setSportId(String sportId) {
         this.sportId = sportId;
     }
 
@@ -71,5 +73,11 @@ public class Sport {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    @PrePersist
+    private void generateSportId() {
+        if (sportId == null || sportId.isBlank()) {
+            sportId = EntityIdGenerator.generate("SPR");
+        }
     }
 }

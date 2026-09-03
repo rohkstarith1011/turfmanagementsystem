@@ -4,6 +4,8 @@ package com.crimsonlogic.turfmanagementsystem.entity;
 
 import java.time.LocalTime;
 
+import com.crimsonlogic.turfmanagementsystem.util.EntityIdGenerator;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,9 +22,8 @@ import jakarta.persistence.Table;
 public class Facility {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "facility_id")
-    private Long facilityId;
+    private String facilityId;
 
     @Column(nullable = false)
     private String name;
@@ -79,7 +81,7 @@ public class Facility {
     public Facility() {
     }
 
-    public Facility(Long facilityId,
+    public Facility(String facilityId,
                     String name,
                     TurfOwner owner,
                     TurfManager manager,
@@ -118,11 +120,11 @@ public class Facility {
         this.status = status;
     }
 
-    public Long getFacilityId() {
+    public String getFacilityId() {
         return facilityId;
     }
 
-    public void setFacilityId(Long facilityId) {
+    public void setFacilityId(String facilityId) {
         this.facilityId = facilityId;
     }
 
@@ -260,5 +262,11 @@ public class Facility {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    @PrePersist
+    private void generateFacilityId() {
+        if (facilityId == null || facilityId.isBlank()) {
+            facilityId = EntityIdGenerator.generate("FAC");
+        }
     }
 }

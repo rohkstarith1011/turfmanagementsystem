@@ -2,6 +2,8 @@ package com.crimsonlogic.turfmanagementsystem.entity;
 
 
 
+import com.crimsonlogic.turfmanagementsystem.util.EntityIdGenerator;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -26,9 +29,8 @@ import jakarta.persistence.UniqueConstraint;
 public class PlayingArea {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "playing_area_id")
-    private Long playingAreaId;
+    private String playingAreaId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "facility_id", nullable = false)
@@ -50,7 +52,7 @@ public class PlayingArea {
     public PlayingArea() {
     }
 
-    public PlayingArea(Long playingAreaId,
+    public PlayingArea(String playingAreaId,
                        Facility facility,
                        TurfSport turfSport,
                        String name,
@@ -65,11 +67,11 @@ public class PlayingArea {
         this.status = status;
     }
 
-    public Long getPlayingAreaId() {
+    public String getPlayingAreaId() {
         return playingAreaId;
     }
 
-    public void setPlayingAreaId(Long playingAreaId) {
+    public void setPlayingAreaId(String playingAreaId) {
         this.playingAreaId = playingAreaId;
     }
 
@@ -111,5 +113,11 @@ public class PlayingArea {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    @PrePersist
+    private void generatePlayingAreaId() {
+        if (playingAreaId == null || playingAreaId.isBlank()) {
+            playingAreaId = EntityIdGenerator.generate("PLA");
+        }
     }
 }

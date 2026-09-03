@@ -3,6 +3,7 @@ package com.crimsonlogic.turfmanagementsystem.entity;
 
 
 import com.crimsonlogic.turfmanagementsystem.entity.enums.UserStatus;
+import com.crimsonlogic.turfmanagementsystem.util.EntityIdGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,9 +22,8 @@ import jakarta.persistence.Table;
 public class Coach extends AbstractUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coach_id")
-    private Long coachId;
+    private String coachId;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -39,7 +40,7 @@ public class Coach extends AbstractUser {
         super();
     }
 
-    public Coach(Long coachId,
+    public Coach(String coachId,
                  String name,
                  String email,
                  String phone,
@@ -56,11 +57,11 @@ public class Coach extends AbstractUser {
         this.specialization = specialization;
     }
 
-    public Long getCoachId() {
+    public String getCoachId() {
         return coachId;
     }
 
-    public void setCoachId(Long coachId) {
+    public void setCoachId(String coachId) {
         this.coachId = coachId;
     }
 
@@ -86,5 +87,11 @@ public class Coach extends AbstractUser {
 
     public void setSpecialization(String specialization) {
         this.specialization = specialization;
+    }
+    @PrePersist
+    private void generateCoachId() {
+        if (coachId == null || coachId.isBlank()) {
+            coachId = EntityIdGenerator.generate("COA");
+        }
     }
 }

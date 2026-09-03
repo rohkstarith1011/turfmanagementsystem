@@ -2,6 +2,8 @@ package com.crimsonlogic.turfmanagementsystem.entity;
 
 
 
+import com.crimsonlogic.turfmanagementsystem.util.EntityIdGenerator;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -26,9 +29,8 @@ import jakarta.persistence.UniqueConstraint;
 public class UserRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_role_id")
-    private Long userRoleId;
+    private String userRoleId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -41,17 +43,17 @@ public class UserRole {
     public UserRole() {
     }
 
-    public UserRole(Long userRoleId, User user, Role role) {
+    public UserRole(String userRoleId, User user, Role role) {
         this.userRoleId = userRoleId;
         this.user = user;
         this.role = role;
     }
 
-    public Long getUserRoleId() {
+    public String getUserRoleId() {
         return userRoleId;
     }
 
-    public void setUserRoleId(Long userRoleId) {
+    public void setUserRoleId(String userRoleId) {
         this.userRoleId = userRoleId;
     }
 
@@ -69,5 +71,11 @@ public class UserRole {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+    @PrePersist
+    private void generateUserRoleId() {
+        if (userRoleId == null || userRoleId.isBlank()) {
+            userRoleId = EntityIdGenerator.generate("USRL");
+        }
     }
 }
