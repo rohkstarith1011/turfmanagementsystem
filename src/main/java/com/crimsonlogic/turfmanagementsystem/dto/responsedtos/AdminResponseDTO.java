@@ -3,15 +3,29 @@ package com.crimsonlogic.turfmanagementsystem.dto.responsedtos;
 
 import com.crimsonlogic.turfmanagementsystem.entity.enums.UserStatus;
 
-public class UserResponseDTO {
+public class AdminResponseDTO {
+
+    private String adminId;
 
     private String userId;
+
     private String name;
+
     private String email;
+
     private String phone;
+
     private UserStatus status;
 
     // Getters and Setters
+
+    public String getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(String adminId) {
+        this.adminId = adminId;
+    }
 
     public String getUserId() {
         return userId;

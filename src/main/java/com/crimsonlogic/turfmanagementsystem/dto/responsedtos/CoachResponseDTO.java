@@ -3,15 +3,33 @@ package com.crimsonlogic.turfmanagementsystem.dto.responsedtos;
 
 import com.crimsonlogic.turfmanagementsystem.entity.enums.UserStatus;
 
-public class UserResponseDTO {
+public class CoachResponseDTO {
+
+    private String coachId;
 
     private String userId;
+
+    private String turfSportId;
+
     private String name;
+
     private String email;
+
     private String phone;
+
     private UserStatus status;
 
+    private String specialization;
+
     // Getters and Setters
+
+    public String getCoachId() {
+        return coachId;
+    }
+
+    public void setCoachId(String coachId) {
+        this.coachId = coachId;
+    }
 
     public String getUserId() {
         return userId;
@@ -19,6 +37,14 @@ public class UserResponseDTO {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getTurfSportId() {
+        return turfSportId;
+    }
+
+    public void setTurfSportId(String turfSportId) {
+        this.turfSportId = turfSportId;
     }
 
     public String getName() {
@@ -51,5 +77,13 @@ public class UserResponseDTO {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
     }
 }

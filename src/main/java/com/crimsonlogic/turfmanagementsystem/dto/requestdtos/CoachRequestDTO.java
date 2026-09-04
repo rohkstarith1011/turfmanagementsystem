@@ -1,13 +1,12 @@
 package com.crimsonlogic.turfmanagementsystem.dto.requestdtos;
 
 
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class UserRequestDTO {
+public class CoachRequestDTO {
 
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
@@ -18,16 +17,19 @@ public class UserRequestDTO {
     @Size(max = 150, message = "Email cannot exceed 150 characters")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
-    private String password;
-
     @NotBlank(message = "Phone is required")
     @Pattern(
         regexp = "^[0-9]{10}$",
         message = "Phone number must contain exactly 10 digits"
     )
     private String phone;
+
+    @NotBlank(message = "Turf sport ID is required")
+    private String turfSportId;
+
+    @NotBlank(message = "Specialization is required")
+    @Size(min = 2, max = 100, message = "Specialization must be between 2 and 100 characters")
+    private String specialization;
 
     // Getters and Setters
 
@@ -47,19 +49,27 @@ public class UserRequestDTO {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getTurfSportId() {
+        return turfSportId;
+    }
+
+    public void setTurfSportId(String turfSportId) {
+        this.turfSportId = turfSportId;
+    }
+
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
     }
 }
