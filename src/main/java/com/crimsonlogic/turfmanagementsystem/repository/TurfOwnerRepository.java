@@ -1,5 +1,6 @@
 package com.crimsonlogic.turfmanagementsystem.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,6 @@ public interface TurfOwnerRepository extends JpaRepository<TurfOwner, String> {
     Optional<TurfOwner> findByUserUserId(String userId);
 
     boolean existsByUserUserId(String userId);
+    
+    List<TurfOwner> findByNameIgnoreCase(String name);
 }

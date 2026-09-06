@@ -24,7 +24,7 @@ public class FacilityResponseDTO {
 
     private String state;
 
-    private String turfType;
+
 
     private Integer capacity;
 
@@ -116,13 +116,7 @@ public class FacilityResponseDTO {
         this.state = state;
     }
 
-    public String getTurfType() {
-        return turfType;
-    }
-
-    public void setTurfType(String turfType) {
-        this.turfType = turfType;
-    }
+ 
 
     public Integer getCapacity() {
         return capacity;

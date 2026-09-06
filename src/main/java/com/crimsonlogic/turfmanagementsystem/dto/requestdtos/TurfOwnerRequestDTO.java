@@ -9,6 +9,9 @@ import jakarta.validation.constraints.Size;
 
 public class TurfOwnerRequestDTO {
 
+	@NotBlank(message = "User ID is required")
+	private String userId;
+	
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
@@ -24,7 +27,7 @@ public class TurfOwnerRequestDTO {
         message = "Phone number must contain exactly 10 digits"
     )
     private String phone;
-
+    
     // Getters and Setters
 
     public String getName() {
@@ -49,5 +52,12 @@ public class TurfOwnerRequestDTO {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

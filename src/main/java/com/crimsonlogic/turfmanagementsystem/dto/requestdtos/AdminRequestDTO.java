@@ -8,6 +8,9 @@ import jakarta.validation.constraints.Size;
 
 public class AdminRequestDTO {
 
+	@NotBlank(message = "User ID is required")
+    private String userId;
+	
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
@@ -25,7 +28,15 @@ public class AdminRequestDTO {
     private String phone;
 
     // Getters and Setters
+    
+    public String getUserId() {
+        return userId;
+    }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+    
     public String getName() {
         return name;
     }

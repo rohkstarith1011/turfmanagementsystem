@@ -51,8 +51,7 @@ public class Facility {
     @Column(nullable = false)
     private String state;
 
-    @Column(nullable = false)
-    private String turfType;
+
 
     @Column(nullable = false)
     private Integer capacity;
@@ -90,7 +89,7 @@ public class Facility {
                     String locality,
                     String city,
                     String state,
-                    String turfType,
+               
                     Integer capacity,
                     LocalTime openingTime,
                     LocalTime closingTime,
@@ -109,7 +108,7 @@ public class Facility {
         this.locality = locality;
         this.city = city;
         this.state = state;
-        this.turfType = turfType;
+   
         this.capacity = capacity;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
@@ -192,13 +191,7 @@ public class Facility {
         this.state = state;
     }
 
-    public String getTurfType() {
-        return turfType;
-    }
-
-    public void setTurfType(String turfType) {
-        this.turfType = turfType;
-    }
+   
 
     public Integer getCapacity() {
         return capacity;

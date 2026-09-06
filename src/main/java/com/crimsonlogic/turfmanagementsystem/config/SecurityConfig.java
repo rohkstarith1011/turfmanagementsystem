@@ -23,7 +23,31 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/**","/api/user-roles/**", "/error").permitAll()
+                .requestMatchers(
+                    "/api/users/**",
+                    "/api/user-roles/**",
+                    "/api/admins/**",
+                    "/api/sports/**",
+                    "/api/amenities/**",
+                    "/api/turf-owners/**",
+                    "/api/facilities/**",
+                    "/api/turf-managers/**",
+                    "/api/turf-sports/**",
+                    "/api/turf-amenities/**",
+                    "/api/playing-areas/**",
+                    "/api/slot-blocks/**",
+                    "/api/slots/**",
+                    "/api/players/**",
+                    "/api/teams/**",
+                    "/api/team-players/**",
+                    "/api/coaches/**",
+                    "/api/coaching-classes/**",
+                    "/api/coaching-class-registrations/**",
+                    "/api/bookings/**",
+                    "/api/booking-players/**",
+                    "/api/payments/**",
+                    "/error"
+                ).permitAll()
                 .anyRequest().authenticated()
             );
 

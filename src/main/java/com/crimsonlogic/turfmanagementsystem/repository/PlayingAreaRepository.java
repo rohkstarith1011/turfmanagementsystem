@@ -11,4 +11,6 @@ public interface PlayingAreaRepository extends JpaRepository<PlayingArea, String
     List<PlayingArea> findByFacilityFacilityId(String facilityId);
 
     List<PlayingArea> findByTurfSportTurfSportId(String turfSportId);
+    
+    List<PlayingArea> findByNameContainingIgnoreCase(String name);
 }

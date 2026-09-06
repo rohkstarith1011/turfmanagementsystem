@@ -1,12 +1,14 @@
 package com.crimsonlogic.turfmanagementsystem.dto.requestdtos;
 
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class TurfManagerRequestDTO {
+
+    @NotBlank(message = "User ID is required")
+    private String userId;
 
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
@@ -24,7 +26,13 @@ public class TurfManagerRequestDTO {
     )
     private String phone;
 
-    // Getters and Setters
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getName() {
         return name;

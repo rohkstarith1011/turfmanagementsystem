@@ -12,4 +12,9 @@ public interface CoachingClassRepository extends JpaRepository<CoachingClass, St
 
     List<CoachingClass> findByTurfSportTurfSportId(String turfSportId);
 
+    List<CoachingClass> findByNameContainingIgnoreCase(String name);
+
+    List<CoachingClass> findByCoachNameContainingIgnoreCase(String name);
+
+    List<CoachingClass> findByTurfSportFacilityNameContainingIgnoreCase(String name);
 }

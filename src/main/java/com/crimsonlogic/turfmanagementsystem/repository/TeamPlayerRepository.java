@@ -1,6 +1,7 @@
 package com.crimsonlogic.turfmanagementsystem.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,6 +14,10 @@ public interface TeamPlayerRepository extends JpaRepository<TeamPlayer, String> 
     List<TeamPlayer> findByPlayerPlayerId(String playerId);
 
     boolean existsByTeamTeamIdAndPlayerPlayerId(
+            String teamId,
+            String playerId);
+    
+    Optional<TeamPlayer> findByTeamTeamIdAndPlayerPlayerId(
             String teamId,
             String playerId);
 }

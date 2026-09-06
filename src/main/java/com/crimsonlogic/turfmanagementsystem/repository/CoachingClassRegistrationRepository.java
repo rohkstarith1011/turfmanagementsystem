@@ -18,4 +18,10 @@ public interface CoachingClassRegistrationRepository
     boolean existsByCoachingClassCoachingClassIdAndPlayerPlayerId(
             String coachingClassId,
             String playerId);
+    
+    List<CoachingClassRegistration>
+    findByCoachingClassNameContainingIgnoreCase(String name);
+
+    List<CoachingClassRegistration>
+    findByPlayerNameContainingIgnoreCase(String name);
 }

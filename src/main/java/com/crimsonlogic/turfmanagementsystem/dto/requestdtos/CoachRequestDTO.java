@@ -1,6 +1,5 @@
 package com.crimsonlogic.turfmanagementsystem.dto.requestdtos;
 
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -8,13 +7,18 @@ import jakarta.validation.constraints.Size;
 
 public class CoachRequestDTO {
 
+    @NotBlank(message = "User ID is required")
+    private String userId;
+
     @NotBlank(message = "Name is required")
-    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
+    @Size(min = 2, max = 100,
+          message = "Name must be between 2 and 100 characters")
     private String name;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
-    @Size(max = 150, message = "Email cannot exceed 150 characters")
+    @Size(max = 150,
+          message = "Email cannot exceed 150 characters")
     private String email;
 
     @NotBlank(message = "Phone is required")
@@ -28,10 +32,17 @@ public class CoachRequestDTO {
     private String turfSportId;
 
     @NotBlank(message = "Specialization is required")
-    @Size(min = 2, max = 100, message = "Specialization must be between 2 and 100 characters")
+    @Size(min = 2, max = 100,
+          message = "Specialization must be between 2 and 100 characters")
     private String specialization;
 
-    // Getters and Setters
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getName() {
         return name;

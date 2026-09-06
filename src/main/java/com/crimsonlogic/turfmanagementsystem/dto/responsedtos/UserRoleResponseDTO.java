@@ -1,6 +1,6 @@
 package com.crimsonlogic.turfmanagementsystem.dto.responsedtos;
 
-
+import com.crimsonlogic.turfmanagementsystem.entity.enums.UserStatus;
 
 public class UserRoleResponseDTO {
 
@@ -8,8 +8,7 @@ public class UserRoleResponseDTO {
     private String userId;
     private String roleId;
     private String roleName;
-
-    // Getters and Setters
+    private UserStatus status;
 
     public String getUserRoleId() {
         return userRoleId;
@@ -41,5 +40,13 @@ public class UserRoleResponseDTO {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
     }
 }

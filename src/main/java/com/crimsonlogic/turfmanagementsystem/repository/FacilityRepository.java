@@ -8,11 +8,20 @@ import com.crimsonlogic.turfmanagementsystem.entity.Facility;
 
 public interface FacilityRepository extends JpaRepository<Facility, String> {
 
+    List<Facility> findByNameIgnoreCase(String name);
+
     List<Facility> findByCityIgnoreCase(String city);
 
     List<Facility> findByStateIgnoreCase(String state);
 
     List<Facility> findByLocalityIgnoreCase(String locality);
 
-    List<Facility> findByTurfTypeIgnoreCase(String turfType);
+
+    List<Facility> findByOwnerTurfOwnerId(String ownerId);
+
+    List<Facility> findByManagerTurfManagerId(String managerId);
+
+    boolean existsByOwnerTurfOwnerId(String ownerId);
+
+    boolean existsByManagerTurfManagerId(String managerId);
 }

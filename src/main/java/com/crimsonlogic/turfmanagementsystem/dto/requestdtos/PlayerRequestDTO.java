@@ -9,6 +9,9 @@ import jakarta.validation.constraints.Size;
 
 public class PlayerRequestDTO {
 
+	@NotBlank(message = "User ID is required")
+	private String userId;
+    
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
@@ -86,4 +89,13 @@ public class PlayerRequestDTO {
     public void setPreferredSports(String preferredSports) {
         this.preferredSports = preferredSports;
     }
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+    
 }

@@ -5,15 +5,20 @@ import com.crimsonlogic.turfmanagementsystem.util.EntityIdGenerator;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "booking_players")
+@Table(
+    name = "booking_players",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"booking_id", "player_id"})
+    }
+)
 public class BookingPlayer {
  
     @Id
     @Column(name = "booking_player_id", nullable = false, unique = true)
     private String bookingPlayerId;
  
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "booking_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
  
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

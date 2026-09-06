@@ -75,9 +75,7 @@ class UserRoleServiceImplTest {
         when(roleRepository.findById("ROL123456"))
                 .thenReturn(Optional.of(role));
 
-        when(userRoleRepository.existsByUserUserIdAndRoleRoleId(
-                "USR123456", "ROL123456"))
-                .thenReturn(false);
+
 
         when(userRoleRepository.save(any(UserRole.class)))
                 .thenReturn(userRole);
@@ -142,9 +140,7 @@ class UserRoleServiceImplTest {
         when(roleRepository.findById("ROL123456"))
                 .thenReturn(Optional.of(role));
 
-        when(userRoleRepository.existsByUserUserIdAndRoleRoleId(
-                "USR123456", "ROL123456"))
-                .thenReturn(true);
+       
 
         IllegalArgumentException exception =
                 assertThrows(

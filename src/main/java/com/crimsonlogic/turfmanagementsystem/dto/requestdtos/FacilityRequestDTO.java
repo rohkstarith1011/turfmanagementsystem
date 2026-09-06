@@ -42,9 +42,7 @@ public class FacilityRequestDTO {
     @Size(max = 100, message = "State cannot exceed 100 characters")
     private String state;
 
-    @NotBlank(message = "Turf type is required")
-    @Size(max = 100, message = "Turf type cannot exceed 100 characters")
-    private String turfType;
+  
 
     @NotNull(message = "Capacity is required")
     @Min(value = 1, message = "Capacity must be at least 1")
@@ -130,14 +128,7 @@ public class FacilityRequestDTO {
         this.state = state;
     }
 
-    public String getTurfType() {
-        return turfType;
-    }
-
-    public void setTurfType(String turfType) {
-        this.turfType = turfType;
-    }
-
+ 
     public Integer getCapacity() {
         return capacity;
     }

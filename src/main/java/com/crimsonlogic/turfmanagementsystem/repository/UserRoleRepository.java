@@ -10,8 +10,6 @@ import com.crimsonlogic.turfmanagementsystem.entity.enums.UserStatus;
 public interface UserRoleRepository extends JpaRepository<UserRole, String> {
 
     List<UserRole> findByUserUserId(String userId);
-
-    boolean existsByUserUserIdAndRoleRoleId(String userId, String roleId);
     
     List<UserRole> findByUserNameAndUserStatus(
             String name, UserStatus status);

@@ -53,21 +53,47 @@ public class UserRoleServiceImpl implements IUserRoleService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Role not found with ID: " + requestDTO.getRoleId()));
 
-        boolean alreadyAssigned =
-                userRoleRepository.existsByUserUserIdAndRoleRoleId(
-                        requestDTO.getUserId(),
-                        requestDTO.getRoleId());
+        List<UserRole> existingUserRoles =
+                userRoleRepository.findByUserUserId(requestDTO.getUserId());
 
-        if (alreadyAssigned) {
-            throw new IllegalArgumentException(
-                    "Role is already assigned to this user");
+        for (UserRole existingUserRole : existingUserRoles) {
+
+            if (existingUserRole.getRole().getRoleId()
+                    .equals(requestDTO.getRoleId())) {
+
+                // Existing role mapping is ACTIVE
+                if (existingUserRole.getStatus() == UserStatus.ACTIVE
+                        || existingUserRole.getStatus() == null) {
+
+                    // Handles old records created before status was introduced
+                    if (existingUserRole.getStatus() == null) {
+                        existingUserRole.setStatus(UserStatus.ACTIVE);
+                        userRoleRepository.save(existingUserRole);
+                    }
+
+                    throw new IllegalArgumentException(
+                            "Role is already assigned to this user");
+                }
+
+                // Existing role mapping is INACTIVE
+                existingUserRole.setStatus(UserStatus.ACTIVE);
+
+                UserRole reactivatedUserRole =
+                        userRoleRepository.save(existingUserRole);
+
+                return mapToResponseDTO(reactivatedUserRole);
+            }
         }
 
+        // No existing mapping → create a new one
         UserRole userRole = new UserRole();
+
         userRole.setUser(user);
         userRole.setRole(role);
+        userRole.setStatus(UserStatus.ACTIVE);
 
-        UserRole savedUserRole = userRoleRepository.save(userRole);
+        UserRole savedUserRole =
+                userRoleRepository.save(userRole);
 
         return mapToResponseDTO(savedUserRole);
     }
@@ -128,6 +154,7 @@ public class UserRoleServiceImpl implements IUserRoleService {
         responseDTO.setUserId(userRole.getUser().getUserId());
         responseDTO.setRoleId(userRole.getRole().getRoleId());
         responseDTO.setRoleName(userRole.getRole().getRoleName());
+        responseDTO.setStatus(userRole.getStatus());
 
         return responseDTO;
     }
