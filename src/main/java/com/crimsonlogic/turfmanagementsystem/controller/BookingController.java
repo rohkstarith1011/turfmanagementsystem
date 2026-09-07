@@ -1,9 +1,12 @@
 package com.crimsonlogic.turfmanagementsystem.controller;
 
 import com.crimsonlogic.turfmanagementsystem.dto.requestdtos.BookingRequestDTO;
+import com.crimsonlogic.turfmanagementsystem.dto.requestdtos.CancellationRequestDTO;
 import com.crimsonlogic.turfmanagementsystem.dto.responsedtos.BookingResponseDTO;
 import com.crimsonlogic.turfmanagementsystem.service.interfaces.IBookingService;
-
+import com.crimsonlogic.turfmanagementsystem.dto.requestdtos.CancellationRequestDTO;
+import com.crimsonlogic.turfmanagementsystem.dto.responsedtos.CancellationResponseDTO;
+import com.crimsonlogic.turfmanagementsystem.service.interfaces.ICancellationService;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -17,9 +20,11 @@ import java.util.List;
 public class BookingController {
 
     private final IBookingService bookingService;
-
-    public BookingController(IBookingService bookingService) {
+    private final ICancellationService cancellationService;
+    public BookingController(IBookingService bookingService, ICancellationService cancellationService) {
         this.bookingService = bookingService;
+        this.cancellationService =
+                cancellationService;
     }
 
     // CREATE BOOKING
@@ -110,11 +115,16 @@ public class BookingController {
 
     // CANCEL BOOKING
     @PatchMapping("/{bookingId}/cancel")
-    public ResponseEntity<Void> cancelBooking(
-            @PathVariable String bookingId) {
+    public ResponseEntity<CancellationResponseDTO>
+    cancelBooking(
+            @PathVariable String bookingId,
+            @Valid @RequestBody
+            CancellationRequestDTO requestDTO) {
 
-        bookingService.cancelBooking(bookingId);
+        requestDTO.setBookingId(bookingId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(
+                cancellationService
+                        .cancelBooking(requestDTO));
     }
 }
