@@ -1,16 +1,25 @@
 package com.crimsonlogic.turfmanagementsystem.dto.responsedtos;
 
-
-
 import java.time.LocalDateTime;
 
 public class NotificationRequestResponseDTO {
 
     private String notificationRequestId;
-    private String userId;
+
+    private String senderUserId;
+
+    private String receiverUserId;
+
+    private String teamId;
+
+    private String bookingId;
+
     private String requestType;
+
     private String message;
+
     private String status;
+
     private LocalDateTime createdAt;
 
     public NotificationRequestResponseDTO() {
@@ -24,12 +33,36 @@ public class NotificationRequestResponseDTO {
         this.notificationRequestId = notificationRequestId;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getSenderUserId() {
+        return senderUserId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setSenderUserId(String senderUserId) {
+        this.senderUserId = senderUserId;
+    }
+
+    public String getReceiverUserId() {
+        return receiverUserId;
+    }
+
+    public void setReceiverUserId(String receiverUserId) {
+        this.receiverUserId = receiverUserId;
+    }
+
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(String teamId) {
+        this.teamId = teamId;
+    }
+
+    public String getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
     }
 
     public String getRequestType() {

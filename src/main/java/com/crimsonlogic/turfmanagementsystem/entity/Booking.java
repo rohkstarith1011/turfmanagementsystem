@@ -61,7 +61,10 @@ public class Booking {
  
     @OneToOne(mappedBy = "booking", fetch = FetchType.LAZY)
     private Payment payment;
- 
+    
+    @Column(name = "need_coach", nullable = false)
+    private Boolean needCoach;
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status;
@@ -72,39 +75,68 @@ public class Booking {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
  
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coach_id")
+    private Coach coach;
+    
     public Booking() {
     }
  
-    public Booking(String bookingId, Player player, Slot slot,
-                   LocalDate bookingDate, LocalTime startTime,
-                   LocalTime endTime, Integer numberOfPlayers,
-                   Double price, Double discount, Double tax,
-                   Double totalAmount, Payment payment,
-                   BookingStatus status, LocalDateTime createdAt,
-                   LocalDateTime updatedAt) {
+//    public Booking(String bookingId, Player player, Slot slot,
+//                   LocalDate bookingDate, LocalTime startTime,
+//                   LocalTime endTime, Integer numberOfPlayers,
+//                   Double price, Double discount, Double tax,
+//                   Double totalAmount, Payment payment,
+//                   BookingStatus status, LocalDateTime createdAt,
+//                   LocalDateTime updatedAt) {
+// 
+//        this.bookingId = bookingId;
+//        this.player = player;
+//        this.slot = slot;
+//        this.bookingDate = bookingDate;
+//        this.startTime = startTime;
+//        this.endTime = endTime;
+//        this.numberOfPlayers = numberOfPlayers;
+//        this.price = price;
+//        this.discount = discount;
+//        this.tax = tax;
+//        this.totalAmount = totalAmount;
+//        this.payment = payment;
+//        this.status = status;
+//        this.createdAt = createdAt;
+//        this.updatedAt = updatedAt;
+//    }
  
-        this.bookingId = bookingId;
-        this.player = player;
-        this.slot = slot;
-        this.bookingDate = bookingDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.numberOfPlayers = numberOfPlayers;
-        this.price = price;
-        this.discount = discount;
-        this.tax = tax;
-        this.totalAmount = totalAmount;
-        this.payment = payment;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
- 
+    
     public String getBookingId() {
         return bookingId;
     }
  
-    public void setBookingId(String bookingId) {
+    public Booking(String bookingId, Player player, Slot slot, LocalDate bookingDate, LocalTime startTime,
+		LocalTime endTime, Integer numberOfPlayers, Double price, Double discount, Double tax, Double totalAmount,
+		Payment payment, Boolean needCoach, BookingStatus status, LocalDateTime createdAt, LocalDateTime updatedAt,
+		Coach coach) {
+	super();
+	this.bookingId = bookingId;
+	this.player = player;
+	this.slot = slot;
+	this.bookingDate = bookingDate;
+	this.startTime = startTime;
+	this.endTime = endTime;
+	this.numberOfPlayers = numberOfPlayers;
+	this.price = price;
+	this.discount = discount;
+	this.tax = tax;
+	this.totalAmount = totalAmount;
+	this.payment = payment;
+	this.needCoach = needCoach;
+	this.status = status;
+	this.createdAt = createdAt;
+	this.updatedAt = updatedAt;
+	this.coach = coach;
+}
+
+	public void setBookingId(String bookingId) {
         this.bookingId = bookingId;
     }
  
@@ -219,7 +251,25 @@ public class Booking {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-    @PrePersist
+    
+    
+    public Boolean getNeedCoach() {
+		return needCoach;
+	}
+
+	public void setNeedCoach(Boolean needCoach) {
+		this.needCoach = needCoach;
+	}
+
+	public Coach getCoach() {
+		return coach;
+	}
+
+	public void setCoach(Coach coach) {
+		this.coach = coach;
+	}
+
+	@PrePersist
     private void generateBookingId() {
         if (bookingId == null || bookingId.isBlank()) {
             bookingId = EntityIdGenerator.generate("BKI");

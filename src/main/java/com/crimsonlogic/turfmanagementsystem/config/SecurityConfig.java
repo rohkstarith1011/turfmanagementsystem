@@ -46,6 +46,7 @@ public class SecurityConfig {
                     "/api/bookings/**",
                     "/api/booking-players/**",
                     "/api/payments/**",
+                    "/api/notification-requests/**",
                     "/error"
                 ).permitAll()
                 .anyRequest().authenticated()

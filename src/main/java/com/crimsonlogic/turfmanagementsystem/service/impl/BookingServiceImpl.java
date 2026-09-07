@@ -94,7 +94,10 @@ public class BookingServiceImpl implements IBookingService {
         booking.setTotalAmount(requestDTO.getTotalAmount());
 
         booking.setStatus(BookingStatus.PENDING);
-
+        
+        booking.setNeedCoach(requestDTO.getNeedCoach());
+        booking.setCoach(null);
+        
         LocalDateTime now = LocalDateTime.now();
 
         booking.setCreatedAt(now);
@@ -412,6 +415,15 @@ public class BookingServiceImpl implements IBookingService {
         response.setUpdatedAt(
                 booking.getUpdatedAt());
 
+        response.setNeedCoach(
+                booking.getNeedCoach());
+
+        if (booking.getCoach() != null) {
+            response.setCoachId(
+                    booking.getCoach().getCoachId());
+        }
+        
+        
         return response;
     }
 }

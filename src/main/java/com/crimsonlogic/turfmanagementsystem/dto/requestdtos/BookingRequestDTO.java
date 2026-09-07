@@ -47,6 +47,8 @@ public class BookingRequestDTO {
     @DecimalMin(value = "0.0", inclusive = true, message = "Total amount cannot be negative")
     private Double totalAmount;
 
+    @NotNull(message = "Coach requirement is required")
+    private Boolean needCoach;
     // Getters and Setters
 
     public String getPlayerId() {
@@ -127,5 +129,13 @@ public class BookingRequestDTO {
 
     public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
+    }
+    
+    public Boolean getNeedCoach() {
+        return needCoach;
+    }
+
+    public void setNeedCoach(Boolean needCoach) {
+        this.needCoach = needCoach;
     }
 }

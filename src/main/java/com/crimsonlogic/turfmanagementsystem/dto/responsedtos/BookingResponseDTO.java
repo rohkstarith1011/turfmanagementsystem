@@ -37,7 +37,10 @@ public class BookingResponseDTO {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
+    
+    private Boolean needCoach;
+    
+    private String coachId;
     // Getters and Setters
 
     public String getBookingId() {
@@ -150,5 +153,21 @@ public class BookingResponseDTO {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    public Boolean getNeedCoach() {
+        return needCoach;
+    }
+
+    public void setNeedCoach(Boolean needCoach) {
+        this.needCoach = needCoach;
+    }
+
+    public String getCoachId() {
+        return coachId;
+    }
+
+    public void setCoachId(String coachId) {
+        this.coachId = coachId;
     }
 }

@@ -2,7 +2,7 @@ package com.crimsonlogic.turfmanagementsystem.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+import com.crimsonlogic.turfmanagementsystem.service.interfaces.INotificationRequestService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,16 +21,18 @@ public class PaymentServiceImpl implements IPaymentService {
 
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
+    private final INotificationRequestService notificationRequestService;
+    
 
-    public PaymentServiceImpl(
-            PaymentRepository paymentRepository,
-            BookingRepository bookingRepository) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, BookingRepository bookingRepository,
+			INotificationRequestService notificationRequestService) {
+		super();
+		this.paymentRepository = paymentRepository;
+		this.bookingRepository = bookingRepository;
+		this.notificationRequestService = notificationRequestService;
+	}
 
-        this.paymentRepository = paymentRepository;
-        this.bookingRepository = bookingRepository;
-    }
-
-    // =========================
+	// =========================
     // CREATE PAYMENT
     // =========================
 
@@ -180,9 +182,21 @@ public class PaymentServiceImpl implements IPaymentService {
         Payment savedPayment =
                 paymentRepository.save(payment);
 
+        /*
+         * If the player requested a coach, automatically
+         * start the coach-request workflow after successful payment.
+         */
+        Booking booking = savedPayment.getBooking();
+
+        if (Boolean.TRUE.equals(booking.getNeedCoach())) {
+
+            notificationRequestService
+                    .createCoachRequestsForBooking(
+                            booking.getBookingId());
+        }
+
         return mapToResponseDTO(savedPayment);
     }
-
     // =========================
     // MARK FAILED
     // =========================

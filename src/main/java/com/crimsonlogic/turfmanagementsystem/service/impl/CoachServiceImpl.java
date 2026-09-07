@@ -71,7 +71,12 @@ public class CoachServiceImpl implements ICoachService {
             throw new IllegalArgumentException(
                     "Cannot assign Coach to an inactive TurfSport");
         }
+        if (!requestDTO.getSpecialization()
+                .equalsIgnoreCase(turfSport.getSport().getName())) {
 
+            throw new IllegalArgumentException(
+                    "Coach specialization must match the TurfSport sport");
+        }    
         Coach existingCoach = coachRepository
                 .findByUserUserId(requestDTO.getUserId())
                 .orElse(null);
@@ -82,7 +87,7 @@ public class CoachServiceImpl implements ICoachService {
                 throw new IllegalArgumentException(
                         "Coach profile already exists for this user");
             }
-
+          
             existingCoach.setName(user.getName());
             existingCoach.setEmail(user.getEmail());
             existingCoach.setPhone(user.getPhone());
@@ -187,7 +192,12 @@ public class CoachServiceImpl implements ICoachService {
             throw new IllegalArgumentException(
                     "Cannot assign Coach to an inactive TurfSport");
         }
+        if (!requestDTO.getSpecialization()
+                .equalsIgnoreCase(turfSport.getSport().getName())) {
 
+            throw new IllegalArgumentException(
+                    "Coach specialization must match the TurfSport sport");
+        }
         coach.setName(user.getName());
         coach.setEmail(user.getEmail());
         coach.setPhone(user.getPhone());
