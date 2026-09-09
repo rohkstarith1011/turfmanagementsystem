@@ -8,7 +8,7 @@ import com.crimsonlogic.turfmanagementsystem.dto.requestdtos.CancellationRequest
 import com.crimsonlogic.turfmanagementsystem.dto.responsedtos.CancellationResponseDTO;
 import com.crimsonlogic.turfmanagementsystem.service.interfaces.ICancellationService;
 import jakarta.validation.Valid;
-
+import com.crimsonlogic.turfmanagementsystem.dto.requestdtos.RescheduleBookingRequestDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -126,5 +126,17 @@ public class BookingController {
         return ResponseEntity.ok(
                 cancellationService
                         .cancelBooking(requestDTO));
+    }
+    @PostMapping("/{bookingId}/reschedule")
+    public ResponseEntity<BookingResponseDTO> rescheduleBooking(
+            @PathVariable String bookingId,
+            @Valid @RequestBody RescheduleBookingRequestDTO requestDTO) {
+
+        BookingResponseDTO response =
+                bookingService.rescheduleBooking(
+                        bookingId,
+                        requestDTO.getNewSlotId());
+
+        return ResponseEntity.ok(response);
     }
 }

@@ -14,7 +14,10 @@ import com.crimsonlogic.turfmanagementsystem.repository.SlotRepository;
 import com.crimsonlogic.turfmanagementsystem.repository.UserRoleRepository;
 import com.crimsonlogic.turfmanagementsystem.service.interfaces.IBookingService;
 import com.crimsonlogic.turfmanagementsystem.repository.RoleRepository;
-
+import com.crimsonlogic.turfmanagementsystem.entity.PlayingArea;
+import com.crimsonlogic.turfmanagementsystem.entity.TurfSport;
+import com.crimsonlogic.turfmanagementsystem.entity.SlotBlock;
+import com.crimsonlogic.turfmanagementsystem.repository.SlotBlockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,25 +29,28 @@ import java.util.List;
 @Transactional
 public class BookingServiceImpl implements IBookingService {
 
-    private final BookingRepository bookingRepository;
-    private final PlayerRepository playerRepository;
-    private final SlotRepository slotRepository;
-    private final UserRoleRepository userRoleRepository;
-    private final RoleRepository roleRepository;
+	private final BookingRepository bookingRepository;
+	private final PlayerRepository playerRepository;
+	private final SlotRepository slotRepository;
+	private final UserRoleRepository userRoleRepository;
+	private final RoleRepository roleRepository;
+	private final SlotBlockRepository slotBlockRepository;
 
-    public BookingServiceImpl(
-            BookingRepository bookingRepository,
-            PlayerRepository playerRepository,
-            SlotRepository slotRepository,
-            UserRoleRepository userRoleRepository,
-            RoleRepository roleRepository) {
+	public BookingServiceImpl(
+	        BookingRepository bookingRepository,
+	        PlayerRepository playerRepository,
+	        SlotRepository slotRepository,
+	        UserRoleRepository userRoleRepository,
+	        RoleRepository roleRepository,
+	        SlotBlockRepository slotBlockRepository) {
 
-        this.bookingRepository = bookingRepository;
-        this.playerRepository = playerRepository;
-        this.slotRepository = slotRepository;
-        this.userRoleRepository = userRoleRepository;
-        this.roleRepository = roleRepository;
-    }
+	    this.bookingRepository = bookingRepository;
+	    this.playerRepository = playerRepository;
+	    this.slotRepository = slotRepository;
+	    this.userRoleRepository = userRoleRepository;
+	    this.roleRepository = roleRepository;
+	    this.slotBlockRepository = slotBlockRepository;
+	}
 
     @Override
     public BookingResponseDTO createBooking(BookingRequestDTO requestDTO) {
@@ -425,5 +431,173 @@ public class BookingServiceImpl implements IBookingService {
         
         
         return response;
+    }
+
+    @Override
+    public BookingResponseDTO rescheduleBooking(
+            String bookingId,
+            String newSlotId) {
+
+        // 1. Lock the current booking
+        Booking booking = bookingRepository
+                .findByBookingIdForUpdate(bookingId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Booking not found with ID: "
+                                        + bookingId));
+
+        // 2. Validate current booking status
+        if (booking.getStatus() == BookingStatus.CANCELLED
+                || booking.getStatus() == BookingStatus.COMPLETED
+                || booking.getStatus() == BookingStatus.NO_SHOW) {
+
+            throw new IllegalArgumentException(
+                    "Booking cannot be rescheduled in its current status: "
+                            + booking.getStatus());
+        }
+
+        // 3. Booking must not have started
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime currentStart =
+                LocalDateTime.of(
+                        booking.getBookingDate(),
+                        booking.getStartTime());
+
+        if (!currentStart.isAfter(now)) {
+
+            throw new IllegalArgumentException(
+                    "Booking cannot be rescheduled after its start time");
+        }
+
+        // 4. Find the target slot
+        Slot newSlot = slotRepository
+                .findById(newSlotId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "New slot not found with ID: "
+                                        + newSlotId));
+
+        // 5. Target slot must be ACTIVE
+        validateSlot(newSlot);
+
+        // 6. Target slot cannot be the current slot
+        if (booking.getSlot()
+                .getSlotId()
+                .equals(newSlot.getSlotId())) {
+
+            throw new IllegalArgumentException(
+                    "New slot must be different from the current slot");
+        }
+
+        // 7. Current and target playing areas
+        PlayingArea currentPlayingArea =
+                booking.getSlot().getPlayingArea();
+
+        PlayingArea newPlayingArea =
+                newSlot.getPlayingArea();
+
+        // 8. Target facility must be the same
+        if (!currentPlayingArea.getFacility()
+                .getFacilityId()
+                .equals(newPlayingArea.getFacility()
+                        .getFacilityId())) {
+
+            throw new IllegalArgumentException(
+                    "Booking can only be rescheduled within the same facility");
+        }
+
+        // 9. Target sport must be the same
+        TurfSport currentTurfSport =
+                currentPlayingArea.getTurfSport();
+
+        TurfSport newTurfSport =
+                newPlayingArea.getTurfSport();
+
+        if (!currentTurfSport.getSport()
+                .getSportId()
+                .equals(newTurfSport.getSport()
+                        .getSportId())) {
+
+            throw new IllegalArgumentException(
+                    "Booking can only be rescheduled within the same sport");
+        }
+
+        // 10. Target facility must be ACTIVE
+        if (!"ACTIVE".equalsIgnoreCase(
+                newPlayingArea.getFacility().getStatus())) {
+
+            throw new IllegalArgumentException(
+                    "Facility must be ACTIVE");
+        }
+
+        // 11. Target facility must be available
+        if (!Boolean.TRUE.equals(
+                newPlayingArea.getFacility().getAvailability())) {
+
+            throw new IllegalArgumentException(
+                    "Facility is currently unavailable");
+        }
+
+        // 12. Validate booking capacity
+        Integer facilityCapacity =
+                newPlayingArea.getFacility().getCapacity();
+
+        if (booking.getNumberOfPlayers() > facilityCapacity) {
+
+            throw new IllegalArgumentException(
+                    "Number of players exceeds facility capacity");
+        }
+
+        // 13. Target slot must not be maintenance-blocked
+        List<SlotBlock> slotBlocks =
+                slotBlockRepository
+                        .findByPlayingAreaPlayingAreaIdAndBlockDateAndStartTimeLessThanAndEndTimeGreaterThan(
+                                newPlayingArea.getPlayingAreaId(),
+                                newSlot.getSlotDate(),
+                                newSlot.getEndTime(),
+                                newSlot.getStartTime());
+
+        boolean blocked = slotBlocks.stream()
+                .anyMatch(block ->
+                        "ACTIVE".equalsIgnoreCase(
+                                block.getStatus()));
+
+        if (blocked) {
+
+            throw new IllegalArgumentException(
+                    "New slot is blocked for maintenance or other reasons");
+        }
+
+        // 14. Target slot must not already be booked
+        if (bookingRepository.existsBySlotSlotIdAndStatusIn(
+                newSlot.getSlotId(),
+                List.of(
+                        BookingStatus.PENDING,
+                        BookingStatus.CONFIRMED,
+                        BookingStatus.RESCHEDULED))) {
+
+            throw new IllegalArgumentException(
+                    "New slot is already booked");
+        }
+
+        // 15. Move booking to the new slot
+        booking.setSlot(newSlot);
+        booking.setBookingDate(newSlot.getSlotDate());
+        booking.setStartTime(newSlot.getStartTime());
+        booking.setEndTime(newSlot.getEndTime());
+
+        // 16. Update status
+        booking.setStatus(BookingStatus.RESCHEDULED);
+
+        // 17. Update timestamp
+        booking.setUpdatedAt(LocalDateTime.now());
+
+        // 18. Save
+        Booking savedBooking =
+                bookingRepository.save(booking);
+
+        // 19. Return response
+        return mapToResponseDTO(savedBooking);
     }
 }

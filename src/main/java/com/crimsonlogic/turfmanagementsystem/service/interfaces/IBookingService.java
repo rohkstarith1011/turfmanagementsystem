@@ -26,4 +26,8 @@ public interface IBookingService {
             BookingRequestDTO requestDTO);
 
     void cancelBooking(String bookingId);
+    
+    BookingResponseDTO rescheduleBooking(
+            String bookingId,
+            String newSlotId);
 }

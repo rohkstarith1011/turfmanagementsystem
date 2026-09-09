@@ -49,6 +49,7 @@ public class SecurityConfig {
                     "/api/notification-requests/**",
                     "/api/notifications/**",
                     "/api/cancellation-policies/**",
+                    "/api/reviews/**",
                     "/error"
                 ).permitAll()
                 .anyRequest().authenticated()
