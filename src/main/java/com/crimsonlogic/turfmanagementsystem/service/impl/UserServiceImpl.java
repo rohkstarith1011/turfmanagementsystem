@@ -13,7 +13,15 @@ import com.crimsonlogic.turfmanagementsystem.dto.requestdtos.UserRequestDTO;
 import com.crimsonlogic.turfmanagementsystem.dto.responsedtos.UserResponseDTO;
 import com.crimsonlogic.turfmanagementsystem.entity.User;
 import com.crimsonlogic.turfmanagementsystem.entity.enums.UserStatus;
+import com.crimsonlogic.turfmanagementsystem.exception.BadRequestException;
+import com.crimsonlogic.turfmanagementsystem.exception.ResourceNotFoundException;
 import com.crimsonlogic.turfmanagementsystem.repository.UserRepository;
+import com.crimsonlogic.turfmanagementsystem.repository.RoleRepository;
+import com.crimsonlogic.turfmanagementsystem.repository.UserRoleRepository;
+import com.crimsonlogic.turfmanagementsystem.repository.PlayerRepository;
+import com.crimsonlogic.turfmanagementsystem.entity.Role;
+import com.crimsonlogic.turfmanagementsystem.entity.UserRole;
+import com.crimsonlogic.turfmanagementsystem.entity.Player;
 import com.crimsonlogic.turfmanagementsystem.service.interfaces.IUserService;
 
 
@@ -22,11 +30,20 @@ public class UserServiceImpl implements IUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
+    private final PlayerRepository playerRepository;
 
     public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           RoleRepository roleRepository,
+                           UserRoleRepository userRoleRepository,
+                           PlayerRepository playerRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
+        this.userRoleRepository = userRoleRepository;
+        this.playerRepository = playerRepository;
     }
 
     @Override
@@ -34,11 +51,11 @@ public class UserServiceImpl implements IUserService {
     public UserResponseDTO createUser(UserRequestDTO requestDTO) {
 
         if (userRepository.existsByEmail(requestDTO.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new BadRequestException("Email already exists");
         }
 
         if (userRepository.existsByPhone(requestDTO.getPhone())) {
-            throw new IllegalArgumentException("Phone number already exists");
+            throw new BadRequestException("Phone number already exists");
         }
 
         User user = new User();
@@ -50,6 +67,28 @@ public class UserServiceImpl implements IUserService {
         user.setStatus(UserStatus.ACTIVE);
 
         User savedUser = userRepository.save(user);
+
+        // Automatically assign the PLAYER role to the new user
+        roleRepository.findByRoleName("PLAYER").ifPresent(playerRole -> {
+            UserRole userRole = new UserRole();
+            userRole.setUser(savedUser);
+            userRole.setRole(playerRole);
+            userRole.setStatus(UserStatus.ACTIVE);
+            userRoleRepository.save(userRole);
+        });
+
+        // Automatically create a default Player profile
+        Player player = new Player();
+        player.setUser(savedUser);
+        player.setName(savedUser.getName());
+        player.setEmail(savedUser.getEmail());
+        player.setPhone(savedUser.getPhone());
+        player.setStatus(UserStatus.ACTIVE);
+        // Default values for other fields
+        player.setLocality("Unknown");
+        player.setSkillLevel("BEGINNER");
+        player.setPreferredSports("None");
+        playerRepository.save(player);
 
         return mapToResponseDTO(savedUser);
     }
@@ -70,7 +109,7 @@ public class UserServiceImpl implements IUserService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new ResourceNotFoundException(
                                 "User not found with ID: " + userId));
 
         return mapToResponseDTO(user);
@@ -84,19 +123,19 @@ public class UserServiceImpl implements IUserService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new ResourceNotFoundException(
                                 "User not found with ID: " + userId));
 
         if (!user.getEmail().equals(requestDTO.getEmail())
                 && userRepository.existsByEmail(requestDTO.getEmail())) {
 
-            throw new IllegalArgumentException("Email already exists");
+            throw new BadRequestException("Email already exists");
         }
 
         if (!user.getPhone().equals(requestDTO.getPhone())
                 && userRepository.existsByPhone(requestDTO.getPhone())) {
 
-            throw new IllegalArgumentException(
+            throw new BadRequestException(
                     "Phone number already exists");
         }
 
@@ -117,7 +156,7 @@ public class UserServiceImpl implements IUserService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new ResourceNotFoundException(
                                 "User not found with ID: " + userId));
 
         user.setStatus(UserStatus.INACTIVE);

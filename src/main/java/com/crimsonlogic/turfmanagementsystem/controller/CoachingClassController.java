@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.crimsonlogic.turfmanagementsystem.dto.requestdtos.CoachingClassRequestDTO;
@@ -24,6 +25,7 @@ public class CoachingClassController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('COACH', 'ADMIN')")
     public ResponseEntity<CoachingClassResponseDTO> createCoachingClass(
             @Valid @RequestBody CoachingClassRequestDTO requestDTO) {
 
@@ -74,6 +76,7 @@ public class CoachingClassController {
     }
 
     @PutMapping("/{coachingClassId}")
+    @PreAuthorize("hasAnyRole('COACH', 'ADMIN')")
     public ResponseEntity<CoachingClassResponseDTO>
             updateCoachingClass(
                     @PathVariable String coachingClassId,
@@ -85,6 +88,7 @@ public class CoachingClassController {
     }
 
     @PatchMapping("/{coachingClassId}/deactivate")
+    @PreAuthorize("hasAnyRole('COACH', 'ADMIN')")
     public ResponseEntity<Void> deactivateCoachingClass(
             @PathVariable String coachingClassId) {
 

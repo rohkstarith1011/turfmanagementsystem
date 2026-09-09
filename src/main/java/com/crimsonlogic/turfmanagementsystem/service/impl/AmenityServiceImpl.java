@@ -3,6 +3,7 @@ package com.crimsonlogic.turfmanagementsystem.service.impl;
 import com.crimsonlogic.turfmanagementsystem.dto.requestdtos.AmenityRequestDTO;
 import com.crimsonlogic.turfmanagementsystem.dto.responsedtos.AmenityResponseDTO;
 import com.crimsonlogic.turfmanagementsystem.entity.Amenity;
+import com.crimsonlogic.turfmanagementsystem.exception.BadRequestException;
 import com.crimsonlogic.turfmanagementsystem.exception.ResourceNotFoundException;
 import com.crimsonlogic.turfmanagementsystem.repository.AmenityRepository;
 import com.crimsonlogic.turfmanagementsystem.service.interfaces.IAmenityService;
@@ -24,7 +25,7 @@ public class AmenityServiceImpl implements IAmenityService {
     public AmenityResponseDTO createAmenity(AmenityRequestDTO requestDTO) {
 
         if (amenityRepository.existsByNameIgnoreCase(requestDTO.getName())) {
-            throw new ResourceNotFoundException("Amenity with this name already exists");
+            throw new BadRequestException("Amenity with this name already exists");
         }
 
         Amenity amenity = new Amenity();
@@ -78,7 +79,7 @@ public class AmenityServiceImpl implements IAmenityService {
         if (!amenity.getName().equalsIgnoreCase(requestDTO.getName())
                 && amenityRepository.existsByNameIgnoreCase(requestDTO.getName())) {
 
-            throw new IllegalArgumentException(
+            throw new BadRequestException(
                     "Amenity with this name already exists"
             );
         }

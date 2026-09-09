@@ -1,0 +1,51 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-primary" href="/">TurfManager AI</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto" *ngIf="currentUser">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/">Home</a>
+        </li>
+        <!-- Player Links -->
+        <ng-container *ngIf="hasRole('PLAYER')">
+          <li class="nav-item"><a class="nav-link" routerLink="/player/search">Find Turfs</a></li>
+          <li class="nav-item"><a class="nav-link" routerLink="/player/bookings">My Bookings</a></li>
+          <li class="nav-item"><a class="nav-link" routerLink="/teams">Teams</a></li>
+          <li class="nav-item"><a class="nav-link" routerLink="/coaches">Coaches</a></li>
+        </ng-container>
+
+        <!-- Owner Links -->
+        <ng-container *ngIf="hasRole('OWNER') || hasRole('MANAGER')">
+          <li class="nav-item"><a class="nav-link" routerLink="/owner-dashboard">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" routerLink="/facilities">My Facilities</a></li>
+        </ng-container>
+
+        <!-- Admin Links -->
+        <ng-container *ngIf="hasRole('ADMIN')">
+          <li class="nav-item"><a class="nav-link" routerLink="/admin-dashboard">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" routerLink="/admin/users">Users</a></li>
+          <li class="nav-item"><a class="nav-link" routerLink="/admin/facilities">All Facilities</a></li>
+        </ng-container>
+      </ul>
+      <ul class="navbar-nav ms-auto" *ngIf="!currentUser">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-primary ms-2" routerLink="/register">Register</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto" *ngIf="currentUser">
+        <li class="nav-item">
+          <span class="nav-link text-light">Welcome, {{ currentUser.name }}</span>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-outline-danger ms-3" (click)="logout()">Logout</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

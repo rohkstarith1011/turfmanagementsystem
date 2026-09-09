@@ -1,0 +1,115 @@
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-magic text-primary me-2"></i>AI Slot Recommendation</h2>
+    <a *ngIf="facilityId" [routerLink]="['/player/facilities', facilityId]" class="btn btn-outline-secondary">Back to Facility</a>
+  </div>
+
+  <div *ngIf="!facilityId" class="alert alert-danger">
+    No facility selected. Please select a facility first.
+  </div>
+
+  <div class="row" *ngIf="facilityId">
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Slot Preferences</h5>
+        </div>
+        <div class="card-body">
+          <h6 class="text-primary mb-3">{{ facility?.name }}</h6>
+          <form (ngSubmit)="getRecommendations()" #aiForm="ngForm">
+            <div class="mb-3">
+              <label class="form-label">Preferred Date</label>
+              <input type="date" class="form-control" name="date" [(ngModel)]="request.preferredDate" required>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Preferred Time Window</label>
+              <select class="form-select" name="window" [(ngModel)]="request.preferredTimeWindow" required>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Evening">Evening</option>
+                <option value="Night">Night</option>
+                <option value="Any">Any Time</option>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Max Budget per hour ($)</label>
+              <input type="number" class="form-control" name="budgetMax" [(ngModel)]="request.budgetMax" required min="1">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" [disabled]="aiForm.invalid || isLoading">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              {{ isLoading ? 'Analyzing Slots...' : 'Find Best Slot' }}
+            </button>
+          </form>
+          
+          <div *ngIf="error" class="alert alert-danger mt-3">
+            {{ error }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div *ngIf="!hasSearched && !isLoading" class="text-center text-muted mt-5">
+        <i class="bi bi-clock-history" style="font-size: 3rem;"></i>
+        <p class="mt-3">Let AI analyze historical demand, pricing, and your preferences to find the perfect slot!</p>
+      </div>
+
+      <div *ngIf="isLoading" class="text-center mt-5">
+        <div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <h5 class="text-primary mt-3">Ollama AI is analyzing slots...</h5>
+      </div>
+
+      <div *ngIf="hasSearched && !isLoading">
+        <div *ngIf="bookingError" class="alert alert-danger mb-3">{{ bookingError }}</div>
+        <div *ngIf="bookingSuccess" class="alert alert-success mb-3">{{ bookingSuccess }}</div>
+
+        <h4 class="mb-3">Recommended Slots</h4>
+        
+        <div *ngIf="recommendations.length === 0" class="alert alert-info">
+          No slots are currently available matching your criteria.
+        </div>
+
+        <div *ngFor="let rec of recommendations; let i = index" class="card shadow-sm border-0 mb-3" [class.border-primary]="i === 0" [class.border]="i === 0" [style.border-width]="i === 0 ? '2px !important' : ''">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h5 class="card-title" [class.text-primary]="i === 0">
+                  <i *ngIf="i === 0" class="bi bi-star-fill text-warning me-2"></i>
+                  Slot: {{ rec.slotId }}
+                </h5>
+                <p class="text-muted small mb-2">
+                  <i class="bi bi-currency-dollar me-1"></i> ${{ rec.price }} | 
+                  Demand: <strong>{{ rec.demandLevel }}</strong>
+                </p>
+              </div>
+              <div class="text-end">
+                <span class="badge bg-success rounded-pill px-3 py-2" style="font-size: 1rem;">
+                  Score: {{ rec.score }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="mt-3 bg-light p-3 rounded">
+              <h6 class="text-muted mb-2"><i class="bi bi-chat-right-quote text-primary me-2"></i>Why AI recommends this:</h6>
+              <ul class="mb-0">
+                <li *ngFor="let reason of rec.reasons">{{ reason }}</li>
+              </ul>
+            </div>
+            
+            <div class="mt-3 text-end">
+              <button class="btn btn-success" (click)="bookSlot(rec.slotId)" [disabled]="bookingInProgress || rec.availability !== 'AVAILABLE'">
+                <span *ngIf="bookingInProgress" class="spinner-border spinner-border-sm me-2"></span>
+                Book This Slot
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

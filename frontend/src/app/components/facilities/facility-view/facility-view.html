@@ -1,0 +1,105 @@
+<div class="container mt-4 mb-5" *ngIf="facility">
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h2 class="card-title text-primary">{{ facility.name }}</h2>
+          <p class="text-muted"><i class="bi bi-geo-alt"></i> {{ facility.address }}, {{ facility.city }}, {{ facility.state }} {{ facility.zipCode }}</p>
+          
+          <div *ngIf="facility.images && facility.images.length > 0" id="facilityCarousel" class="carousel slide mt-3 mb-3" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+              <button *ngFor="let img of facility.images; let i = index" type="button" data-bs-target="#facilityCarousel" [attr.data-bs-slide-to]="i" [class.active]="i === 0"></button>
+            </div>
+            <div class="carousel-inner rounded">
+              <div class="carousel-item" *ngFor="let img of facility.images; let i = index" [class.active]="i === 0">
+                <img [src]="img.imageUrl" class="d-block w-100" style="height: 250px; object-fit: cover;" alt="Facility Image">
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#facilityCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#facilityCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+
+          <hr>
+          <p>{{ facility.description }}</p>
+          <hr>
+          <ul class="list-unstyled">
+            <li><strong>Opening:</strong> {{ facility.openingTime }}</li>
+            <li><strong>Closing:</strong> {{ facility.closingTime }}</li>
+            <li><strong>Contact:</strong> {{ facility.contactNumber }}</li>
+            <li><strong>Rating:</strong> <span class="badge bg-success">{{ facility.averageRating | number:'1.1-1' }}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">Book a Slot</h4>
+            <a [routerLink]="['/ai/slot-recommendation']" [queryParams]="{ facilityId: facility.facilityId }" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-magic me-1"></i> Ask AI
+            </a>
+          </div>
+          
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <label for="datePicker" class="form-label fw-bold">Select Date</label>
+              <input type="date" id="datePicker" class="form-control form-control-lg" [(ngModel)]="selectedDate" (change)="loadSlots()">
+            </div>
+          </div>
+
+          <div *ngIf="loadingSlots" class="text-center p-4">
+            <div class="spinner-border text-primary" role="status"></div>
+          </div>
+
+          <div *ngIf="!loadingSlots && slots.length === 0" class="alert alert-warning">
+            No available slots found for the selected date. Please choose another date.
+          </div>
+
+          <div class="row" *ngIf="!loadingSlots && slots.length > 0">
+            <div class="col-sm-6 col-md-4 mb-3" *ngFor="let slot of slots">
+              <div class="card h-100 border text-center slot-card" 
+                   [ngClass]="{'border-success': selectedSlot?.slotId === slot.slotId, 'bg-light text-muted': slot.status !== 'AVAILABLE'}"
+                   (click)="selectSlot(slot)"
+                   [style.cursor]="slot.status === 'AVAILABLE' ? 'pointer' : 'not-allowed'">
+                <div class="card-body">
+                  <h6 class="mb-2">{{ slot.startTime }} - {{ slot.endTime }}</h6>
+                  <p class="mb-0 fw-bold">${{ slot.price }}</p>
+                  <small [ngClass]="slot.status === 'AVAILABLE' ? 'text-success' : 'text-danger'">{{ slot.status }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-top" *ngIf="selectedSlot">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5>Selected Slot: {{ selectedSlot.startTime }} - {{ selectedSlot.endTime }}</h5>
+                <h4 class="text-primary mb-0">Total: ${{ selectedSlot.price }}</h4>
+              </div>
+              <button class="btn btn-success btn-lg px-5" (click)="bookSlot()" [disabled]="bookingInProgress">
+                <span *ngIf="bookingInProgress" class="spinner-border spinner-border-sm me-2"></span>
+                Confirm Booking
+              </button>
+            </div>
+            <div *ngIf="bookingError" class="alert alert-danger mt-3">{{ bookingError }}</div>
+            <div *ngIf="bookingSuccess" class="alert alert-success mt-3">{{ bookingSuccess }}</div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-5 text-center" *ngIf="!facility && !loading">
+  <h3>Facility not found.</h3>
+  <a routerLink="/player/search" class="btn btn-primary mt-3">Back to Search</a>
+</div>

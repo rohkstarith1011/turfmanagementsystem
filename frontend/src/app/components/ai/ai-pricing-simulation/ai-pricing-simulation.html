@@ -1,0 +1,116 @@
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-currency-dollar text-warning me-2"></i>AI Dynamic Pricing</h2>
+    <a routerLink="/facilities" class="btn btn-outline-secondary">Back to Facilities</a>
+  </div>
+
+  <div *ngIf="!facilityId" class="alert alert-danger">
+    No facility selected. Please select a facility first from your dashboard.
+  </div>
+
+  <div class="row" *ngIf="facilityId">
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm border-0 border-warning border-top border-3">
+        <div class="card-body">
+          <h5 class="card-title text-warning mb-3">Simulation Parameters</h5>
+          <h6 class="text-muted mb-4">{{ facility?.name }}</h6>
+          
+          <form (ngSubmit)="simulatePricing()" #aiForm="ngForm">
+            <div class="mb-4">
+              <label class="form-label">Simulation Date</label>
+              <input type="date" class="form-control" name="date" [(ngModel)]="request.simulationDate" required>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100" [disabled]="aiForm.invalid || isLoading">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              {{ isLoading ? 'Simulating...' : 'Run Pricing Simulation' }}
+            </button>
+          </form>
+          
+          <div *ngIf="error" class="alert alert-danger mt-3">
+            {{ error }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div *ngIf="!hasSearched && !isLoading" class="text-center text-muted mt-5">
+        <i class="bi bi-robot" style="font-size: 3rem;"></i>
+        <p class="mt-3">Run an AI simulation to determine the optimal price based on demand, capacity, and historical trends.</p>
+      </div>
+
+      <div *ngIf="isLoading" class="text-center mt-5">
+        <div class="spinner-grow text-warning" role="status" style="width: 3rem; height: 3rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <h5 class="text-warning mt-3">Ollama AI is calculating optimal pricing...</h5>
+      </div>
+
+      <div *ngIf="hasSearched && !isLoading && simulationResult">
+        <div *ngIf="approvalError" class="alert alert-danger mb-3">{{ approvalError }}</div>
+        <div *ngIf="approvalSuccess" class="alert alert-success mb-3">{{ approvalSuccess }}</div>
+
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body p-4">
+            <div class="row text-center mb-4">
+              <div class="col-4">
+                <p class="text-muted mb-1">Current Base Price</p>
+                <h4>${{ simulationResult.basePrice }}</h4>
+              </div>
+              <div class="col-4 border-start border-end">
+                <p class="text-muted mb-1">Expected Demand</p>
+                <h4 [ngClass]="{
+                  'text-danger': simulationResult.demandLevel === 'HIGH',
+                  'text-warning': simulationResult.demandLevel === 'MEDIUM',
+                  'text-info': simulationResult.demandLevel === 'LOW'
+                }">{{ simulationResult.demandLevel }}</h4>
+              </div>
+              <div class="col-4">
+                <p class="text-muted mb-1">AI Recommended Price</p>
+                <h4 class="text-success">${{ simulationResult.recommendedPrice }}</h4>
+              </div>
+            </div>
+
+            <div class="alert alert-secondary small mb-4">
+              <i class="bi bi-info-circle me-1"></i> AI Recommendation strictly kept within your configured limits: 
+              <strong>Min: ${{ simulationResult.minimumPrice }}</strong> | <strong>Max: ${{ simulationResult.maximumPrice }}</strong>
+            </div>
+
+            <div class="mb-4">
+              <h6 class="text-muted">AI Pricing Factors:</h6>
+              <ul>
+                <li *ngFor="let factor of simulationResult.factors">{{ factor }}</li>
+              </ul>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center p-3 rounded" 
+                 [ngClass]="{'bg-light': simulationResult.approvalStatus === 'PENDING', 
+                             'bg-success-subtle': simulationResult.approvalStatus === 'APPROVED',
+                             'bg-danger-subtle': simulationResult.approvalStatus === 'REJECTED'}">
+              
+              <div *ngIf="simulationResult.approvalStatus === 'PENDING'">
+                <strong>Decision Required:</strong> Do you want to apply this new price to the facility?
+              </div>
+              <div *ngIf="simulationResult.approvalStatus === 'APPROVED'" class="text-success fw-bold">
+                <i class="bi bi-check-circle me-1"></i> Recommendation Approved and Applied!
+              </div>
+              <div *ngIf="simulationResult.approvalStatus === 'REJECTED'" class="text-danger fw-bold">
+                <i class="bi bi-x-circle me-1"></i> Recommendation Rejected. Base price unchanged.
+              </div>
+
+              <div *ngIf="simulationResult.approvalStatus === 'PENDING'">
+                <button class="btn btn-outline-danger me-2" (click)="rejectPrice()" [disabled]="isApproving">Reject</button>
+                <button class="btn btn-success" (click)="approvePrice()" [disabled]="isApproving">
+                  <span *ngIf="isApproving" class="spinner-border spinner-border-sm me-2"></span>
+                  Approve & Apply
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

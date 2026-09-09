@@ -47,6 +47,17 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
             SELECT COUNT(b)
             FROM Booking b
             WHERE b.slot.playingArea.facility.facilityId = :facilityId
+            AND b.bookingDate BETWEEN :startDate AND :endDate
+            """)
+    Long countBookingsByFacilityAndBookingDateBetween(
+            @Param("facilityId") String facilityId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
+    @Query("""
+            SELECT COUNT(b)
+            FROM Booking b
+            WHERE b.slot.playingArea.facility.facilityId = :facilityId
             AND (
                 b.bookingDate > :currentDate
                 OR (

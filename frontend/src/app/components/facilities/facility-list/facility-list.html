@@ -1,0 +1,49 @@
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Facilities</h2>
+    <div class="d-flex gap-2">
+      <div *ngIf="authService.hasRole('PLAYER')">
+        <a routerLink="/ai/turf-recommendation" class="btn btn-outline-primary shadow-sm"><i class="bi bi-magic me-2"></i>AI Turf Recommendation</a>
+      </div>
+      <a routerLink="/facilities/create" class="btn btn-primary">Add New Facility</a>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && facilities.length === 0" class="alert alert-info">
+    You haven't created any facilities yet. Click "Add New Facility" to get started!
+  </div>
+
+  <div class="row" *ngIf="!loading && facilities.length > 0">
+    <div class="col-md-4 mb-4" *ngFor="let facility of facilities">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{ facility.name }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{ facility.city }}, {{ facility.state }}</h6>
+          <p class="card-text text-truncate">{{ facility.description }}</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="badge" [ngClass]="facility.isActive ? 'bg-success' : 'bg-secondary'">
+              {{ facility.isActive ? 'Active' : 'Inactive' }}
+            </span>
+            <small class="text-muted">Rating: {{ facility.averageRating | number:'1.1-1' }}/5.0</small>
+          </div>
+        </div>
+        <div class="card-footer bg-white border-0">
+          <a class="btn btn-sm btn-outline-primary w-100 mb-2" [routerLink]="['/facilities', facility.facilityId, 'slots']">Manage Slots</a>
+          <a class="btn btn-sm btn-outline-info w-100 mb-2" [routerLink]="['/facilities', facility.facilityId, 'images']">Manage Images</a>
+          <div class="d-flex gap-2" *ngIf="authService.hasRole('OWNER') || authService.hasRole('MANAGER')">
+            <a class="btn btn-sm btn-outline-success w-100" [routerLink]="['/ai/demand-forecast']" [queryParams]="{ facilityId: facility.facilityId }"><i class="bi bi-graph-up me-1"></i> Forecast</a>
+            <a class="btn btn-sm btn-outline-warning w-100" [routerLink]="['/ai/pricing-simulation']" [queryParams]="{ facilityId: facility.facilityId }"><i class="bi bi-currency-dollar me-1"></i> AI Pricing</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

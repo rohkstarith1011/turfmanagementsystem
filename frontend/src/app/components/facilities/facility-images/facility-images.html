@@ -1,0 +1,67 @@
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Manage Facility Images</h2>
+    <a routerLink="/facilities" class="btn btn-outline-secondary">Back to Facilities</a>
+  </div>
+
+  <div *ngIf="loading" class="text-center p-5">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <div *ngIf="facility && !loading" class="row">
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Upload New Image</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="uploadError" class="alert alert-danger">{{ uploadError }}</div>
+          <div *ngIf="uploadSuccess" class="alert alert-success">{{ uploadSuccess }}</div>
+          
+          <div class="mb-3">
+            <label for="imageFile" class="form-label">Select Image</label>
+            <input class="form-control" type="file" id="imageFile" (change)="onFileSelected($event)" accept="image/*">
+          </div>
+          
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="isPrimary" [(ngModel)]="isPrimary">
+            <label class="form-check-label" for="isPrimary">
+              Set as Primary Image
+            </label>
+          </div>
+          
+          <button class="btn btn-success w-100" [disabled]="!selectedFile || uploading" (click)="uploadImage()">
+            <span *ngIf="uploading" class="spinner-border spinner-border-sm me-2"></span>
+            Upload
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0">Existing Images</h5>
+        </div>
+        <div class="card-body bg-light">
+          <div *ngIf="!facility.images || facility.images.length === 0" class="text-center text-muted p-4">
+            No images uploaded yet.
+          </div>
+          
+          <div class="row" *ngIf="facility.images && facility.images.length > 0">
+            <div class="col-md-6 col-lg-4 mb-4" *ngFor="let img of facility.images">
+              <div class="card h-100 position-relative border-0 shadow-sm">
+                <span *ngIf="img.isPrimary" class="position-absolute top-0 start-0 badge bg-success m-2" style="z-index: 10;">Primary</span>
+                <img [src]="img.imageUrl" class="card-img-top" alt="Facility Image" style="height: 150px; object-fit: cover;">
+                <div class="card-body p-2 text-center">
+                  <button *ngIf="!img.isPrimary" class="btn btn-sm btn-outline-primary mb-1 w-100" (click)="setPrimary(img.imageId)">Set Primary</button>
+                  <button class="btn btn-sm btn-outline-danger w-100" (click)="deleteImage(img.imageId)">Delete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

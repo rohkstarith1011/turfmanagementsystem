@@ -1,0 +1,84 @@
+<div class="container mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Add New Facility</h2>
+        <a routerLink="/facilities" class="btn btn-outline-secondary">Back to List</a>
+      </div>
+
+      <div class="card shadow">
+        <div class="card-body">
+          <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+          <form (ngSubmit)="onSubmit()" #facilityForm="ngForm">
+            <div class="mb-3">
+              <label for="name" class="form-label">Facility Name</label>
+              <input type="text" class="form-control" id="name" required minlength="2" maxlength="150" [(ngModel)]="model.name" name="name" #nameInput="ngModel"
+                     [ngClass]="{ 'is-invalid': nameInput.invalid && (nameInput.dirty || nameInput.touched) }">
+              <div *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)" class="invalid-feedback">
+                <span *ngIf="nameInput.errors?.['required']">Name is required.</span>
+                <span *ngIf="nameInput.errors?.['minlength']">Name must be at least 2 characters.</span>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" rows="3" required [(ngModel)]="model.description" name="description" #descInput="ngModel"
+                        [ngClass]="{ 'is-invalid': descInput.invalid && (descInput.dirty || descInput.touched) }"></textarea>
+              <div *ngIf="descInput.invalid && (descInput.dirty || descInput.touched)" class="invalid-feedback">Description is required.</div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" required [(ngModel)]="model.address" name="address" #addrInput="ngModel"
+                       [ngClass]="{ 'is-invalid': addrInput.invalid && (addrInput.dirty || addrInput.touched) }">
+                <div *ngIf="addrInput.invalid && (addrInput.dirty || addrInput.touched)" class="invalid-feedback">Address is required.</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" required [(ngModel)]="model.city" name="city" #city="ngModel">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="state" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" required [(ngModel)]="model.state" name="state" #state="ngModel">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="zipCode" class="form-label">Zip Code</label>
+                <input type="text" class="form-control" id="zipCode" required [(ngModel)]="model.zipCode" name="zipCode" #zipCode="ngModel">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="contactNumber" class="form-label">Contact Number</label>
+                <input type="tel" class="form-control" id="contactNumber" required [(ngModel)]="model.contactNumber" name="contactNumber" #contact="ngModel">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="openingTime" class="form-label">Opening Time</label>
+                <input type="time" class="form-control" id="openingTime" required [(ngModel)]="model.openingTime" name="openingTime">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="closingTime" class="form-label">Closing Time</label>
+                <input type="time" class="form-control" id="closingTime" required [(ngModel)]="model.closingTime" name="closingTime">
+              </div>
+            </div>
+
+            <div class="form-check form-switch mb-4">
+              <input class="form-check-input" type="checkbox" id="isActive" [(ngModel)]="model.isActive" name="isActive">
+              <label class="form-check-label" for="isActive">Facility is currently active</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" [disabled]="!facilityForm.form.valid || loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Create Facility
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

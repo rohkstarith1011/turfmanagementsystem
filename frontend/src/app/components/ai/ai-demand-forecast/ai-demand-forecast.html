@@ -1,0 +1,100 @@
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-graph-up text-success me-2"></i>AI Demand Forecast</h2>
+    <a routerLink="/facilities" class="btn btn-outline-secondary">Back to Facilities</a>
+  </div>
+
+  <div *ngIf="!facilityId" class="alert alert-danger">
+    No facility selected. Please select a facility first from your dashboard.
+  </div>
+
+  <div class="row" *ngIf="facilityId">
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm border-0 border-success border-top border-3">
+        <div class="card-body">
+          <h5 class="card-title text-success mb-3">Forecast Parameters</h5>
+          <h6 class="text-muted mb-4">{{ facility?.name }}</h6>
+          
+          <form (ngSubmit)="getForecast()" #aiForm="ngForm">
+            <div class="mb-3">
+              <label class="form-label">Forecast Date</label>
+              <input type="date" class="form-control" name="date" [(ngModel)]="request.forecastDate" required>
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label">Sport (for specific analysis)</label>
+              <select class="form-select" name="sport" [(ngModel)]="request.sport" required>
+                <option value="Football">Football</option>
+                <option value="Cricket">Cricket</option>
+                <option value="Tennis">Tennis</option>
+                <option value="Basketball">Basketball</option>
+                <option value="General">General / All</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100" [disabled]="aiForm.invalid || isLoading">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              {{ isLoading ? 'Generating Forecast...' : 'Generate AI Forecast' }}
+            </button>
+          </form>
+          
+          <div *ngIf="error" class="alert alert-danger mt-3">
+            {{ error }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div *ngIf="!hasSearched && !isLoading" class="text-center text-muted mt-5">
+        <i class="bi bi-bar-chart-line" style="font-size: 3rem;"></i>
+        <p class="mt-3">Predict future demand for your facility to optimize staffing and pricing.</p>
+      </div>
+
+      <div *ngIf="isLoading" class="text-center mt-5">
+        <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <h5 class="text-success mt-3">Ollama AI is analyzing historical data and patterns...</h5>
+      </div>
+
+      <div *ngIf="hasSearched && !isLoading">
+        <h4 class="mb-3">Demand Forecast Results</h4>
+        
+        <div *ngIf="forecasts.length === 0" class="alert alert-info">
+          No forecast data could be generated for this date.
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover border" *ngIf="forecasts.length > 0">
+            <thead class="table-light">
+              <tr>
+                <th>Time Window</th>
+                <th>Demand Level</th>
+                <th>Expected Occupancy</th>
+                <th>AI Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let f of forecasts">
+                <td class="fw-bold">{{ f.timeWindow }}</td>
+                <td>
+                  <span class="badge rounded-pill" 
+                        [ngClass]="{
+                          'bg-danger': f.demandLevel === 'HIGH',
+                          'bg-warning text-dark': f.demandLevel === 'MEDIUM',
+                          'bg-info text-dark': f.demandLevel === 'LOW'
+                        }">
+                    {{ f.demandLevel }}
+                  </span>
+                </td>
+                <td>{{ f.expectedOccupancy }}</td>
+                <td class="small text-muted">{{ f.explanation }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -9,7 +9,13 @@ import com.crimsonlogic.turfmanagementsystem.entity.enums.UserStatus;
 import com.crimsonlogic.turfmanagementsystem.repository.FacilityRepository;
 import com.crimsonlogic.turfmanagementsystem.repository.TurfManagerRepository;
 import com.crimsonlogic.turfmanagementsystem.repository.TurfOwnerRepository;
+import com.crimsonlogic.turfmanagementsystem.security.CustomUserDetails;
 import com.crimsonlogic.turfmanagementsystem.service.interfaces.IFacilityService;
+import com.crimsonlogic.turfmanagementsystem.service.interfaces.FacilityImageService;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +27,16 @@ public class FacilityServiceImpl implements IFacilityService {
     private final FacilityRepository facilityRepository;
     private final TurfOwnerRepository turfOwnerRepository;
     private final TurfManagerRepository turfManagerRepository;
+    private final FacilityImageService facilityImageService;
 
     public FacilityServiceImpl(FacilityRepository facilityRepository,
                                TurfOwnerRepository turfOwnerRepository,
-                               TurfManagerRepository turfManagerRepository) {
+                               TurfManagerRepository turfManagerRepository,
+                               @Lazy FacilityImageService facilityImageService) {
         this.facilityRepository = facilityRepository;
         this.turfOwnerRepository = turfOwnerRepository;
         this.turfManagerRepository = turfManagerRepository;
+        this.facilityImageService = facilityImageService;
     }
 
     @Override
@@ -182,6 +191,8 @@ public class FacilityServiceImpl implements IFacilityService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Facility not found"));
 
+        verifyOwnership(facility);
+
         TurfOwner owner = turfOwnerRepository.findById(requestDTO.getOwnerId())
                 .orElseThrow(() ->
                         new IllegalArgumentException("Turf Owner not found"));
@@ -249,6 +260,8 @@ public class FacilityServiceImpl implements IFacilityService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Facility not found"));
 
+        verifyOwnership(facility);
+
         facility.setStatus("INACTIVE");
         facility.setAvailability(false);
 
@@ -293,6 +306,30 @@ public class FacilityServiceImpl implements IFacilityService {
         responseDTO.setAvailability(facility.getAvailability());
         responseDTO.setStatus(facility.getStatus());
 
+        try {
+            responseDTO.setImages(facilityImageService.getFacilityImages(facility.getFacilityId()));
+        } catch (Exception e) {
+            // Ignore if images fail to load
+        }
+
         return responseDTO;
+    }
+
+    private void verifyOwnership(Facility facility) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+            
+            boolean isAdmin = userDetails.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            if (isAdmin) {
+                return; // Admin can modify
+            }
+            
+            String currentUserId = userDetails.getUser().getUserId();
+            if (!facility.getOwner().getUser().getUserId().equals(currentUserId)) {
+                throw new AccessDeniedException("You do not have permission to modify this facility.");
+            }
+        }
     }
 }

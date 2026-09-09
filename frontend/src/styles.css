@@ -1,0 +1,46 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  /* Sports / Turf Palette */
+  --primary-color: #0d6efd; /* Energetic Blue */
+  --secondary-color: #198754; /* Turf Green */
+  --accent-color: #ffc107; /* Warning / Gold */
+  --background-color: #f8f9fa; /* Light Gray */
+  --surface-color: #ffffff; /* White */
+  --text-color: #212529; /* Dark Gray */
+  --muted-text: #6c757d;
+  --success-color: #198754;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --border-color: #dee2e6;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+}
+
+.card {
+  background-color: var(--surface-color);
+  border-color: var(--border-color);
+}
+
+.text-primary { color: var(--primary-color) !important; }
+.text-success { color: var(--success-color) !important; }
+.text-warning { color: var(--warning-color) !important; }
+.text-danger { color: var(--danger-color) !important; }
+.text-muted { color: var(--muted-text) !important; }
+
+.bg-primary { background-color: var(--primary-color) !important; }
+.bg-success { background-color: var(--success-color) !important; }
+.bg-warning { background-color: var(--warning-color) !important; }
+.bg-danger { background-color: var(--danger-color) !important; }
+
+.btn-primary { 
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.btn-success { 
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+}

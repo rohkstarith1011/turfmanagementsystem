@@ -20,6 +20,16 @@ public interface SlotRepository extends JpaRepository<Slot, String> {
 
     List<Slot> findBySlotDate(LocalDate slotDate);
 
+    @Query("""
+            SELECT s FROM Slot s 
+            WHERE s.playingArea.facility.facilityId = :facilityId 
+            AND s.slotDate = :slotDate 
+            AND s.status = 'AVAILABLE'
+            """)
+    List<Slot> findAvailableSlotsByFacilityAndDate(
+            @Param("facilityId") String facilityId, 
+            @Param("slotDate") LocalDate slotDate);
+
     List<Slot> findByPlayingAreaPlayingAreaIdAndSlotDateAndStartTimeLessThanAndEndTimeGreaterThan(
             String playingAreaId,
             LocalDate slotDate,

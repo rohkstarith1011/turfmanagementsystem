@@ -1,8 +1,7 @@
 package com.crimsonlogic.turfmanagementsystem.dto.responsedtos;
 
-
-
 import java.time.LocalTime;
+import java.util.List;
 
 public class FacilityResponseDTO {
 
@@ -41,6 +40,7 @@ public class FacilityResponseDTO {
     private Boolean availability;
 
     private String status;
+    private List<FacilityImageResponseDTO> images;
 
     // Getters and Setters
 
@@ -180,5 +180,13 @@ public class FacilityResponseDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<FacilityImageResponseDTO> getImages() {
+        return images;
+    }
+
+    public void setImages(List<FacilityImageResponseDTO> images) {
+        this.images = images;
     }
 }

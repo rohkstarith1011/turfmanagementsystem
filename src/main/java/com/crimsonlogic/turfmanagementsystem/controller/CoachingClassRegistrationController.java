@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class CoachingClassRegistrationController {
 
     // CREATE REGISTRATION
     @PostMapping
+    @PreAuthorize("hasAnyRole('PLAYER', 'COACH', 'ADMIN')")
     public ResponseEntity<CoachingClassRegistrationResponseDTO> createRegistration(
             @Valid @RequestBody CoachingClassRegistrationRequestDTO requestDTO) {
 
@@ -100,6 +102,7 @@ public class CoachingClassRegistrationController {
 
     // UPDATE REGISTRATION
     @PutMapping("/{registrationId}")
+    @PreAuthorize("hasAnyRole('COACH', 'ADMIN')")
     public ResponseEntity<CoachingClassRegistrationResponseDTO> updateRegistration(
             @PathVariable String registrationId,
             @Valid @RequestBody CoachingClassRegistrationRequestDTO requestDTO) {
@@ -112,6 +115,7 @@ public class CoachingClassRegistrationController {
 
     // DEACTIVATE REGISTRATION
     @PatchMapping("/{registrationId}/deactivate")
+    @PreAuthorize("hasAnyRole('COACH', 'ADMIN')")
     public ResponseEntity<Void> deactivateRegistration(
             @PathVariable String registrationId) {
 
