@@ -23,5 +23,7 @@ public interface FacilityRepository extends JpaRepository<Facility, String> {
 
     boolean existsByOwnerTurfOwnerId(String ownerId);
 
+    long countByStatusIgnoreCase(String status);
+    
     boolean existsByManagerTurfManagerId(String managerId);
 }

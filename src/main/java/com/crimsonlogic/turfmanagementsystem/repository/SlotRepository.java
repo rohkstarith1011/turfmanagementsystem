@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.crimsonlogic.turfmanagementsystem.entity.Slot;
 
@@ -23,4 +25,22 @@ public interface SlotRepository extends JpaRepository<Slot, String> {
             LocalDate slotDate,
             LocalTime endTime,
             LocalTime startTime);
+    
+    @Query("""
+            SELECT COUNT(s)
+            FROM Slot s
+            WHERE s.playingArea.facility.facilityId = :facilityId
+            AND s.slotDate = :slotDate
+            AND LOWER(s.status) = 'active'
+            """)
+    Long countActiveSlotsByFacilityAndDate(
+            @Param("facilityId") String facilityId,
+            @Param("slotDate") LocalDate slotDate);
+    
+    @Query("""
+            SELECT COUNT(s)
+            FROM Slot s
+            WHERE LOWER(s.status) = 'active'
+            """)
+    Long countAllActiveSlots();
 }

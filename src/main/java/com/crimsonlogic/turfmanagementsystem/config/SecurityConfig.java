@@ -50,6 +50,8 @@ public class SecurityConfig {
                     "/api/notifications/**",
                     "/api/cancellation-policies/**",
                     "/api/reviews/**",
+                    "/api/turf-owner-dashboard/**",
+                    "/api/admin-dashboard/**",
                     "/error"
                 ).permitAll()
                 .anyRequest().authenticated()

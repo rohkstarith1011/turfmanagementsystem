@@ -3,6 +3,7 @@ package com.crimsonlogic.turfmanagementsystem.service.impl;
 import com.crimsonlogic.turfmanagementsystem.dto.requestdtos.AmenityRequestDTO;
 import com.crimsonlogic.turfmanagementsystem.dto.responsedtos.AmenityResponseDTO;
 import com.crimsonlogic.turfmanagementsystem.entity.Amenity;
+import com.crimsonlogic.turfmanagementsystem.exception.ResourceNotFoundException;
 import com.crimsonlogic.turfmanagementsystem.repository.AmenityRepository;
 import com.crimsonlogic.turfmanagementsystem.service.interfaces.IAmenityService;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class AmenityServiceImpl implements IAmenityService {
     public AmenityResponseDTO createAmenity(AmenityRequestDTO requestDTO) {
 
         if (amenityRepository.existsByNameIgnoreCase(requestDTO.getName())) {
-            throw new IllegalArgumentException("Amenity with this name already exists");
+            throw new ResourceNotFoundException("Amenity with this name already exists");
         }
 
         Amenity amenity = new Amenity();
@@ -51,7 +52,7 @@ public class AmenityServiceImpl implements IAmenityService {
     public AmenityResponseDTO getAmenityById(String amenityId) {
 
         Amenity amenity = amenityRepository.findById(amenityId)
-                .orElseThrow(() -> new IllegalArgumentException("Amenity not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Amenity not found"));
 
         return mapToResponseDTO(amenity);
     }
@@ -61,7 +62,7 @@ public class AmenityServiceImpl implements IAmenityService {
     public AmenityResponseDTO getAmenityByName(String name) {
 
         Amenity amenity = amenityRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new IllegalArgumentException("Amenity not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Amenity not found"));
 
         return mapToResponseDTO(amenity);
     }
@@ -72,7 +73,7 @@ public class AmenityServiceImpl implements IAmenityService {
             AmenityRequestDTO requestDTO) {
 
         Amenity amenity = amenityRepository.findById(amenityId)
-                .orElseThrow(() -> new IllegalArgumentException("Amenity not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Amenity not found"));
 
         if (!amenity.getName().equalsIgnoreCase(requestDTO.getName())
                 && amenityRepository.existsByNameIgnoreCase(requestDTO.getName())) {
@@ -94,7 +95,7 @@ public class AmenityServiceImpl implements IAmenityService {
     public void deactivateAmenity(String amenityId) {
 
         Amenity amenity = amenityRepository.findById(amenityId)
-                .orElseThrow(() -> new IllegalArgumentException("Amenity not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Amenity not found"));
 
         amenity.setStatus("INACTIVE");
 
